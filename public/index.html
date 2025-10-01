@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mueblería "El Buen Descanso"</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <header>
+    <h1>Catálogo de Muebles</h1>
+    <p>Productos de calidad para tu hogar.</p>
+  </header>
+
+  <main>
+    <div id="product-container" class="container"></div>
+  </main>
+  <div id="checkout-modal" class="modal-backdrop">
+    <div class="modal-content">
+        <span class="close-button">&times;</span>
+        <h2>Finalizar Compra</h2>
+        <p>Por favor, completa tus datos para la entrega.</p>
+        <form id="checkout-form">
+            <input type="text" name="nombre" placeholder="Nombre" required>
+            <input type="text" name="apellidos" placeholder="Apellidos" required>
+            <input type="text" name="direccion" placeholder="Dirección de entrega" required>
+            <input type="tel" name="telefono" placeholder="Teléfono de contacto" required>
+            <input type="text" name="horarios" placeholder="Horario de entrega preferido">
+            <select name="pago" required>
+                <option value="" disabled selected>Selecciona un método de pago</option>
+                <option value="Efectivo">Efectivo contra entrega</option>
+                <option value="Transferencia">Transferencia Bancaria</option>
+                <option value="MercadoPago">MercadoPago</option>
+            </select>
+            <button type="submit">Realizar Pedido</button>
+        </form>
+    </div>
+</div>
+  <footer>
+    <p>&copy; 2025 Mueblería "El Buen Descanso"</p>
+  </footer>
+
+  <script src="scripts.js"></script>
+</body>
+</html>

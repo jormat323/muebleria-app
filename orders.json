@@ -1,0 +1,112 @@
+[
+  {
+    "id": 1759028917244,
+    "cliente": {
+      "nombre": "Juan Perez",
+      "email": "juan.perez@example.com"
+    },
+    "productos": [
+      {
+        "id": 1,
+        "nombre": "Sillón Escandinavo",
+        "precio": 30000,
+        "cantidad": 1
+      }
+    ],
+    "total": 30000,
+    "fecha": "2025-09-28T03:08:37.244Z",
+    "estado": "Procesando"
+  },
+  {
+    "id": 1759029403890,
+    "cliente": {
+      "nombre": "Juan Perez",
+      "email": "juan.perez@example.com"
+    },
+    "productos": [
+      {
+        "id": 3,
+        "nombre": "Lámpara de Pie Industrial",
+        "precio": 15000,
+        "cantidad": 1
+      }
+    ],
+    "total": 15000,
+    "fecha": "2025-09-28T03:16:43.890Z",
+    "estado": "Enviado"
+  },
+  {
+    "id": 1759030084551,
+    "cliente": {
+      "nombre": "Juan Perez",
+      "email": "juan.perez@example.com"
+    },
+    "productos": [
+      {
+        "id": 1,
+        "nombre": "Sillón Escandinavo",
+        "precio": 30000,
+        "cantidad": 1
+      },
+      {
+        "id": 3,
+        "nombre": "Lámpara de Pie Industrial",
+        "precio": 15000,
+        "cantidad": 1
+      }
+    ],
+    "total": 45000,
+    "fecha": "2025-09-28T03:28:04.551Z",
+    "estado": "Procesando"
+  },
+  {
+    "id": 1759080151350,
+    "cliente": {
+      "nombre": "Jorge L Matto",
+      "apellidos": "Matto",
+      "direccion": "arenales 5126",
+      "telefono": "3704204709",
+      "horariosEntrega": "10",
+      "metodoPago": "tarjetas visa"
+    },
+    "productos": [
+      {
+        "id": 1,
+        "nombre": "Sillón Escandinavo",
+        "precio": 30000,
+        "cantidad": 1
+      },
+      {
+        "id": 3,
+        "nombre": "Lámpara de Pie Industrial",
+        "precio": 15000,
+        "cantidad": 1
+      }
+    ],
+    "total": 45000,
+    "fecha": "2025-09-28T17:22:31.350Z",
+    "estado": "Procesando"
+  },
+  {
+    "id": 1759112867753,
+    "cliente": {
+      "nombre": "mariela ",
+      "apellidos": "Sanchez",
+      "direccion": "juan jose silva 2135",
+      "telefono": "3704204709",
+      "horariosEntrega": "10hs",
+      "metodoPago": "Efectivo"
+    },
+    "productos": [
+      {
+        "id": 1759027697157,
+        "nombre": "Mesa",
+        "precio": 15000,
+        "cantidad": 1
+      }
+    ],
+    "total": 15000,
+    "fecha": "2025-09-29T02:27:47.753Z",
+    "estado": "Procesando"
+  }
+]

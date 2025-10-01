@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel de Administración</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        /* Estilos específicos para el panel de admin */
+        main {
+            padding: 20px;
+        }
+
+        .admin-form,
+        .product-list {
+            background-color: #fff;
+            padding: 20px;
+            margin-bottom: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .admin-form input,
+        .admin-form textarea {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        .admin-form button {
+            background-color: #28a745;
+            cursor: pointer;
+            padding: 10px 15px;
+            color: white;
+            border: none;
+            border-radius: 5px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th,
+        td {
+            padding: 12px;
+            border-bottom: 1px solid #ddd;
+            text-align: left;
+        }
+
+        .btn-edit {
+            background-color: #ffc107;
+        }
+
+        .btn-delete {
+            background-color: #dc3545;
+        }
+
+        .btn-edit,
+        .btn-delete {
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <h1>Panel de Administración</h1>
+    </header>
+
+    <main class="container">
+        <div class="admin-form">
+            <h2 id="form-title">Agregar Nuevo Producto</h2>
+            <form id="product-form">
+                <input type="hidden" id="product-id">
+                <input type="text" id="nombre" placeholder="Nombre del producto" required>
+                <textarea id="descripcion" placeholder="Descripción" required></textarea>
+                <input type="number" id="precio" placeholder="Precio" required>
+                <input type="text" id="imagen" placeholder="URL de la imagen" required>
+                <button type="submit">Guardar Producto</button>
+            </form>
+        </div>
+
+        <div class="product-list">
+            <h2>Productos Actuales</h2>
+            <table id="products-table">
+                <thead>
+                    <tr>
+                        <th>Nombre</th>
+                        <th>Precio</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody id="products-table-body">
+                </tbody>
+            </table>
+        </div>
+        <div class="product-list">
+            <h2>Gestión de Pedidos</h2>
+            <table id="orders-table">
+                <thead>
+                    <tr>
+                        <th>ID Pedido</th>
+                        <th>Fecha</th>
+                        <th>Cliente</th>
+                        <th>Dirección</th>
+                        <th>Total</th>
+                        <th>Estado</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody id="orders-table-body">
+                </tbody>
+            </table>
+        </div>
+    </main>
+
+    <script src="admin.js"></script>
+</body>
+
+</html>
