@@ -17,7 +17,7 @@ async function fetchProducts() {
             const productCard = document.createElement('div');
             productCard.classList.add('product-card');
             productCard.innerHTML = `
-                <img src="${product.imagen}" alt="${product.nombre}">
+                <img src="${product.imagen}" alt="${product.nombre}" style="width:300; height:200">
                 <h2>${product.nombre}</h2>
                 <p class="description">${product.descripcion}</p>
                 <p class="price">$${product.precio.toLocaleString('es-AR')}</p>
