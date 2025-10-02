@@ -1,9 +1,12 @@
+// Espera a que el contenido de la página se cargue
 window.addEventListener('DOMContentLoaded', () => {
     fetchProducts();
     setupModal();
+    setupCart();
 });
 
-// Función para obtener y mostrar los productos.
+// --- Lógica Principal de la Tienda ---
+
 async function fetchProducts() {
     try {
         const response = await fetch('/api/products');
@@ -17,11 +20,11 @@ async function fetchProducts() {
             const productCard = document.createElement('div');
             productCard.classList.add('product-card');
             productCard.innerHTML = `
-                <img src="${product.imagen}" alt="${product.nombre}" style="width:300; height:200">
+                <img src="${product.imagen}" alt="${product.nombre}">
                 <h2>${product.nombre}</h2>
                 <p class="description">${product.descripcion}</p>
                 <p class="price">$${product.precio.toLocaleString('es-AR')}</p>
-                <button onclick="addToCart(${product.id}, '${product.nombre}', ${product.precio})">Agregar al Carrito</button>
+                <button onclick="addToCart('${product._id}', '${product.nombre}', ${product.precio}, '${product.imagen}')">Agregar al Carrito</button>
             `;
             container.appendChild(productCard);
         });
@@ -30,102 +33,138 @@ async function fetchProducts() {
     }
 }
 
-// --- LÓGICA DEL CARRITO Y MODAL ---
+// --- Lógica del Carrito y Notificaciones ---
 let carrito = [];
-const checkoutModal = document.getElementById('checkout-modal');
-const checkoutForm = document.getElementById('checkout-form');
-const closeButton = document.querySelector('.close-button');
+const cartIcon = document.getElementById('cart-icon');
+const cartSidebar = document.getElementById('cart-sidebar');
+const closeCartBtn = document.querySelector('#cart-sidebar .close-btn');
+const cartItemsContainer = document.getElementById('cart-items');
+const cartCount = document.getElementById('cart-count');
+const cartTotal = document.getElementById('cart-total');
+const checkoutBtnSidebar = document.getElementById('checkout-btn-sidebar');
 
-function setupModal() {
-    // Cierra el modal con el botón X
-    closeButton.onclick = () => checkoutModal.style.display = 'none';
-    
-    // Cierra el modal si se hace clic fuera de él
-    window.onclick = (event) => {
-        if (event.target == checkoutModal) {
-            checkoutModal.style.display = 'none';
+function setupCart() {
+    cartIcon.onclick = () => cartSidebar.classList.add('open');
+    closeCartBtn.onclick = () => cartSidebar.classList.remove('open');
+    checkoutBtnSidebar.onclick = () => {
+        if (carrito.length > 0) {
+            cartSidebar.classList.remove('open');
+            checkoutModal.style.display = 'flex';
+        } else {
+            showToast("Tu carrito está vacío.", 'error');
         }
     };
+}
+
+function addToCart(productId, productName, productPrice, productImagen) {
+    const existingProductIndex = carrito.findIndex(item => item.id === productId);
+
+    if (existingProductIndex > -1) {
+        carrito[existingProductIndex].cantidad++;
+    } else {
+        carrito.push({ id: productId, nombre: productName, precio: productPrice, cantidad: 1, imagen: productImagen });
+    }
     
-    // Escucha el envío del formulario
+    showToast(`"${productName}" fue agregado al carrito.`);
+    renderCart();
+}
+
+function renderCart() {
+    cartItemsContainer.innerHTML = '';
+    let total = 0;
+    let totalItems = 0;
+
+    carrito.forEach((item, index) => {
+        const itemEl = document.createElement('div');
+        itemEl.classList.add('cart-item');
+        itemEl.innerHTML = `
+            <img src="${item.imagen}" alt="${item.nombre}">
+            <div class="cart-item-details">
+                <h4>${item.nombre}</h4>
+                <p class="price">$${item.precio.toLocaleString('es-AR')}</p>
+                <p class="quantity">Cantidad: ${item.cantidad}</p>
+                <a class="remove-btn" data-index="${index}">Eliminar</a>
+            </div>
+        `;
+        cartItemsContainer.appendChild(itemEl);
+        total += item.precio * item.cantidad;
+        totalItems += item.cantidad;
+    });
+
+    cartTotal.textContent = `$${total.toLocaleString('es-AR')}`;
+    cartCount.textContent = totalItems;
+    
+    document.querySelectorAll('.remove-btn').forEach(btn => {
+        btn.onclick = (e) => removeFromCart(parseInt(e.target.dataset.index));
+    });
+}
+
+function removeFromCart(index) {
+    carrito.splice(index, 1);
+    renderCart();
+}
+
+function showToast(message, type = 'success') {
+    const container = document.getElementById('toast-container');
+    const toast = document.createElement('div');
+    toast.classList.add('toast');
+    toast.textContent = message;
+    if (type === 'error') toast.style.backgroundColor = '#dc3545';
+    
+    container.appendChild(toast);
+
+    setTimeout(() => toast.classList.add('show'), 100);
+    setTimeout(() => {
+        toast.classList.remove('show');
+        toast.addEventListener('transitionend', () => toast.remove());
+    }, 3000);
+}
+
+
+// --- Lógica del Modal de Compra ---
+const checkoutModal = document.getElementById('checkout-modal');
+const checkoutForm = document.getElementById('checkout-form');
+const closeButton = document.querySelector('.close-button'); // Declaración movida aquí
+
+function setupModal() {
+    closeButton.onclick = () => checkoutModal.style.display = 'none';
+    window.onclick = (event) => {
+        if (event.target == checkoutModal) checkoutModal.style.display = 'none';
+    };
     checkoutForm.addEventListener('submit', placeOrder);
 }
 
-function addToCart(productId, productName, productPrice) {
-    const existingProduct = carrito.find(item => item.id === productId);
-
-    if (existingProduct) {
-        existingProduct.cantidad++;
-    } else {
-        carrito.push({ id: productId, nombre: productName, precio: productPrice, cantidad: 1 });
-    }
-    
-    alert(`"${productName}" agregado al carrito.`);
-    
-    // Muestra el botón para finalizar la compra si no existe
-    if (!document.getElementById('checkout-btn')) {
-        const checkoutButton = document.createElement('button');
-        checkoutButton.id = 'checkout-btn';
-        checkoutButton.textContent = 'Finalizar Compra';
-        // Al hacer clic, muestra el modal en lugar de llamar a placeOrder directamente
-        checkoutButton.onclick = () => checkoutModal.style.display = 'flex';
-        document.body.appendChild(checkoutButton);
-        // Estilos del botón
-        checkoutButton.style.position = 'fixed';
-        checkoutButton.style.bottom = '20px';
-        checkoutButton.style.right = '20px';
-        checkoutButton.style.padding = '15px';
-        checkoutButton.style.backgroundColor = '#28a745';
-        checkoutButton.style.color = 'white';
-        checkoutButton.style.border = 'none';
-        checkoutButton.style.borderRadius = '5px';
-        checkoutButton.style.cursor = 'pointer';
-        checkoutButton.style.zIndex = '999';
-    }
-}
-
-// Esta función ahora se activa al enviar el formulario del modal
 async function placeOrder(event) {
-    event.preventDefault(); // Evita que la página se recargue
+    event.preventDefault();
 
-    if (carrito.length === 0) {
-        alert("El carrito está vacío.");
-        return;
-    }
-
-    // Recolecta los datos desde el formulario
     const formData = new FormData(checkoutForm);
     const clienteData = Object.fromEntries(formData.entries());
 
     const orderData = {
-        cliente: {
-            nombre: clienteData.nombre,
-            apellidos: clienteData.apellidos,
-            direccion: clienteData.direccion,
-            telefono: clienteData.telefono,
-            horariosEntrega: clienteData.horarios,
-            metodoPago: clienteData.pago
-        },
+        cliente: clienteData,
         productos: carrito,
         total: carrito.reduce((sum, item) => sum + item.precio * item.cantidad, 0)
     };
 
-    const response = await fetch('/api/orders', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(orderData)
-    });
+    try {
+        const response = await fetch('/api/orders', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(orderData)
+        });
+        if (!response.ok) throw new Error('La respuesta del servidor no fue exitosa.');
 
-    if (response.ok) {
         const orderConfirmation = await response.json();
-        checkoutModal.style.display = 'none'; // Oculta el modal
-        checkoutForm.reset(); // Limpia el formulario
-        alert(`¡Pedido realizado con éxito! Tu número de pedido es: ${orderConfirmation.id}`);
         
-        carrito = []; // Limpia el carrito
-        const checkoutButton = document.getElementById('checkout-btn');
-        if (checkoutButton) checkoutButton.remove();
-    } else {
-        alert("Hubo un error al procesar tu pedido.");
+        checkoutModal.style.display = 'none';
+        checkoutForm.reset();
+        
+        showToast(`¡Pedido #${orderConfirmation.id} realizado con éxito!`);
+        
+        carrito = [];
+        renderCart();
+    } catch (error) {
+        showToast("Hubo un error al procesar tu pedido.", 'error');
+        console.error('Error al realizar el pedido:', error);
     }
 }

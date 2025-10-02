@@ -7,10 +7,11 @@
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-
+<div id="toast-container"></div>
   <header>
     <h1>Catálogo de Muebles</h1>
     <p>Productos de calidad para tu hogar.</p>
+    <div id="cart-icon">🛒<span id="cart-count">0</span></div>
   </header>
 
   <main>
@@ -27,7 +28,7 @@
             <input type="text" name="direccion" placeholder="Dirección de entrega" required>
             <input type="tel" name="telefono" placeholder="Teléfono de contacto" required>
             <input type="text" name="horarios" placeholder="Horario de entrega preferido">
-            <select name="pago" required>
+            <select name="metodoPago" required>
                 <option value="" disabled selected>Selecciona un método de pago</option>
                 <option value="Efectivo">Efectivo contra entrega</option>
                 <option value="Transferencia">Transferencia Bancaria</option>
@@ -39,6 +40,15 @@
 </div>
   <footer>
     <p>&copy; 2025 Mueblería "El Buen Descanso"</p>
+<div id="cart-sidebar" class="cart-sidebar">
+    <a href="javascript:void(0)" class="close-btn">&times;</a>
+    <h2>Tu Carrito</h2>
+    <div id="cart-items"></div>
+    <div class="cart-footer">
+        <h3>Total: <span id="cart-total">$0</span></h3>
+        <button id="checkout-btn-sidebar">Finalizar Compra</button>
+    </div>
+</div>
   </footer>
 
   <script src="scripts.js"></script>

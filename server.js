@@ -1,5 +1,6 @@
 // --- 1. IMPORTACIONES ---
 require('dotenv').config();
+const User = require('./models/user');
 const express = require('express');
 const mongoose = require('mongoose');
 const path = require('path');
@@ -30,10 +31,32 @@ app.use(session({
 }));
 
 // --- 4. LÓGICA DE LOGIN Y SEGURIDAD ---
-const adminUser = {
-    username: 'admin',
-    passwordHash: '$2a$12$bPK4bAYoUMu5GWVWMy9G9u4WFDPdaeWpZCNY1NvueHsKmdpNUO25W' // admin123
+// Lógica para crear el primer administrador si no existe ninguno
+const setupInitialAdmin = async () => {
+    try {
+        const userCount = await User.countDocuments();
+        if (userCount === 0) {
+            const username = process.env.INITIAL_ADMIN_USER || 'admin';
+            const password = process.env.INITIAL_ADMIN_PASSWORD || 'admin123';
+
+            if (!process.env.INITIAL_ADMIN_PASSWORD) {
+                console.warn('⚠️ ADVERTENCIA: Usando contraseña de administrador por defecto. Defina INITIAL_ADMIN_PASSWORD en su .env');
+            }
+
+            const passwordHash = await bcrypt.hash(password, 10);
+            const newUser = new User({ username, passwordHash });
+            await newUser.save();
+            console.log('✅ Primer usuario administrador creado:', username);
+        }
+    } catch (error) {
+        console.error('❌ Error al configurar el usuario administrador:', error);
+    }
 };
+
+db.once('open', () => {
+    console.log('✅ Conectado a la base de datos MongoDB');
+    setupInitialAdmin(); // Ejecuta la configuración después de conectar
+});
 
 const requireLogin = (req, res, next) => {
     if (req.session && req.session.userId) {
@@ -46,11 +69,21 @@ const requireLogin = (req, res, next) => {
 // --- 5. RUTAS DE AUTENTICACIÓN ---
 app.post('/api/login', async (req, res) => {
     const { username, password } = req.body;
-    if (username === adminUser.username && await bcrypt.compare(password, adminUser.passwordHash)) {
-        req.session.userId = adminUser.username;
-        res.json({ success: true, message: 'Login exitoso' });
-    } else {
-        res.status(401).json({ success: false, message: 'Usuario o contraseña incorrectos' });
+    try {
+        const user = await User.findOne({ username: username });
+        if (!user) {
+            return res.status(401).json({ success: false, message: 'Usuario o contraseña incorrectos' });
+        }
+
+        const isMatch = await bcrypt.compare(password, user.passwordHash);
+        if (isMatch) {
+            req.session.userId = user._id; // Guardamos el ID del usuario en la sesión
+            res.json({ success: true, message: 'Login exitoso' });
+        } else {
+            res.status(401).json({ success: false, message: 'Usuario o contraseña incorrectos' });
+        }
+    } catch (error) {
+        res.status(500).json({ message: 'Error en el servidor' });
     }
 });
 
@@ -124,6 +157,8 @@ app.post('/api/orders', async (req, res) => {
         const newOrder = await order.save();
         res.status(201).json(newOrder);
     } catch (err) {
+        res.status(400).json({ message: err.message });
+        console.error('--- ERROR DE VALIDACIÓN DE PEDIDO ---', err); 
         res.status(400).json({ message: err.message });
     }
 });
